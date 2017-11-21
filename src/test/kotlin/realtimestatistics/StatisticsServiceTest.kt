@@ -20,7 +20,6 @@ class StatisticsServiceTest {
 
     @Test
     fun shouldCreateItemSuccessfully() {
-        println(influxHost)
         //Given
         val count = 200
         val timestamp = Date().time
