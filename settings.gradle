@@ -1,0 +1,4 @@
+rootProject.name = 'real-time-statistics'
+include 'controllers'
+include 'calculator'
+

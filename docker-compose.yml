@@ -1,0 +1,9 @@
+version: '2'
+services:
+  influxdb:
+      image: influxdb:1.3.7
+      volumes:
+        - ./influxdb/data:/var/lib/influxdb
+        - ./influxdb/config/:/etc/influxdb/
+      ports:
+        - 8086:8086
