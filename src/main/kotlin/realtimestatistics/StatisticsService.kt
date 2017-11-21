@@ -10,8 +10,8 @@ enum class StatisticResult {
     OK, OLD
 }
 
-open class StatisticsService(private val influxDB: InfluxDB,
-                             private val dbName: String = "statistics") {
+class StatisticsService(private val influxDB: InfluxDB,
+                        private val dbName: String = "statistics") {
 
     private val timeFrameInMillis = 60000
 
@@ -28,7 +28,7 @@ open class StatisticsService(private val influxDB: InfluxDB,
         influxDB.createDatabase(dbName)
     }
 
-    open fun create(statistic: Statistic): StatisticResult {
+    fun create(statistic: Statistic): StatisticResult {
         val now = Date().time
         if ((statistic.timestamp + timeFrameInMillis) >= now) {
             influxDB.write(dbName, "", Point.measurement("uploads")
@@ -41,13 +41,17 @@ open class StatisticsService(private val influxDB: InfluxDB,
         return StatisticResult.OLD
     }
 
-    open fun aggregated(): Total {
+    fun aggregated(): Total {
         val query = Query(
                 aggregateQuery,
                 dbName
         )
-        return influxDB.query(query)
-                .results.first().series.first().values
+        val results = influxDB.query(query)
+                .results
+        if (results.first().series == null) {
+            return Total(0.0, 0.0, 0.0, 0.0)
+        }
+        return results.first().series.first().values
                 .map { mutableList ->
                     Total(mutableList[1].toString().toDouble(),
                             mutableList[2].toString().toDouble(),

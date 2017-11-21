@@ -6,12 +6,15 @@ import io.javalin.Context
 import io.javalin.Javalin
 import org.influxdb.InfluxDB
 import org.influxdb.InfluxDBFactory
+import java.util.*
 
-data class Statistic(val count: Int = 0, val timestamp: Long = 0)
+data class Statistic(val count: Int = 0, val timestamp: Long = Date().time)
 
 data class Total(val count: Double, val sum: Double, val min: Double, val max: Double)
 
-val influxDB: InfluxDB by lazy { InfluxDBFactory.connect("http://localhost:8086", "root", "root") }
+val influxHost = System.getenv().getOrDefault("influx.host", "influxdb")!!
+
+val influxDB: InfluxDB by lazy { InfluxDBFactory.connect("http://$influxHost:8086", "root", "root") }
 
 fun main(args: Array<String>) {
     val app = Javalin.start(7000)

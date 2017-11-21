@@ -5,5 +5,11 @@ services:
       volumes:
         - ./influxdb/data:/var/lib/influxdb
         - ./influxdb/config/:/etc/influxdb/
+  realtimestatistics:
+      build: .
       ports:
-        - 8086:8086
+        - 7000:7000
+      links:
+        - influxdb:influxdb
+      depends_on:
+        - influxdb

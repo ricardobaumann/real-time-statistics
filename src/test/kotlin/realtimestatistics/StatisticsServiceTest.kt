@@ -1,6 +1,7 @@
 package realtimestatistics
 
 import org.assertj.core.api.Assertions.assertThat
+import org.influxdb.InfluxDB
 import org.influxdb.InfluxDBFactory
 import org.influxdb.dto.Point
 import org.influxdb.dto.Query
@@ -11,14 +12,15 @@ import java.util.concurrent.TimeUnit
 
 class StatisticsServiceTest {
 
-    private val influxDb = InfluxDBFactory.connect("http://localhost:8086", "root", "root")
+    private val influxDb: InfluxDB by lazy { InfluxDBFactory.connect("http://localhost:8086", "root", "root") }
 
-    private val dbName = "statistics"
+    private val dbName = "testdb"
 
-    private val service = StatisticsService(influxDb)
+    private val service = StatisticsService(influxDb, dbName)
 
     @Test
     fun shouldCreateItemSuccessfully() {
+        println(influxHost)
         //Given
         val count = 200
         val timestamp = Date().time
@@ -46,13 +48,13 @@ class StatisticsServiceTest {
         //Given
         val count = 200
         val timestamp = Date().time
-        influxDB.write(dbName, "", Point.measurement("uploads")
+        influxDb.write(dbName, "", Point.measurement("uploads")
                 .time(timestamp, TimeUnit.MILLISECONDS)
                 .addField("s_count", count)
                 .addField("s_timestamp", timestamp)
                 .build())
 
-        influxDB.write(dbName, "", Point.measurement("uploads")
+        influxDb.write(dbName, "", Point.measurement("uploads")
                 .time(timestamp + 10, TimeUnit.MILLISECONDS)
                 .addField("s_count", count - 2)
                 .addField("s_timestamp", timestamp + 10)
